@@ -119,4 +119,10 @@ root@controlplane1:~# chown -R vagrant. ~vagrant/.kube/
 ```
 root@controlplane1:~# kubectl completion bash > /etc/bash_completion.d/kubectl
 ```
-
+### 4.yaml and python 들여쓰기 설정 (vimrc)
+> ~/.vimrc
+```
+syntax on
+autocmd FileType yaml setlocal ts=2 sts=2 sw=2 et ai
+autocmd FileType python setlocal ts=4 sts=4 sw=4 expandtab autoindent
+```
