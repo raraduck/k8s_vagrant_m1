@@ -6,7 +6,7 @@ Vagrant.configure("2") do |config|
   ## Hostmanager plugin
   config.hostmanager.enabled = true
   config.hostmanager.manage_guest = true
-  config.hostmanager.include_offline = true
+  # config.hostmanager.include_offline = true
   config.hostmanager.host_file_path = "/etc/hosts"
 
   config.vm.define "controlplane1" do |config0|

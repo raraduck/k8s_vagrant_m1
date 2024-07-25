@@ -71,7 +71,7 @@ metallb_config:
   address_pools:
     primary:
       ip_range:
-        - 192.168.56.200-192.168.56.210
+        - 192.168.56.200-192.168.56.210 (이부분 수정 필요)
       auto_assign: true
 ```
 -> 주석 해제 및 주소 대역 수정
