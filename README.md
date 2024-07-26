@@ -98,11 +98,15 @@ $ ansible-playbook -i inventory/mycluster/inventory.ini cluster.yml -b
 #### 설치 중 오류 발생 시 
 ```
 ansible-playbook -i inventory/mycluster/inventory.ini cluster.yml -b --start-at-task="작업이름"
+```
 라고 입력하면 해당 위치부터 다시 이어서 시도
 TASK [network_plugin/calico : Set calico_pool_conf]
 에서 만약 오류 발생 시 
 괄호 안 글자 전체가 작업이름입니다.
 ```
+ansible-playbook -i inventory/mycluster/inventory.ini cluster.yml -b --start-at-task="작업이름" --limit node1 
+```
+으로 특정 노드에서 우선 설치 시도
 
 ## 초기 명령어 사용 설정
 ### 1.root 사용자로 전환
