@@ -2,89 +2,67 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
+  config.vm.define "controlplane1" do |config|
+    config.vm.box = "ilker/ubuntu2004"
+    config.vm.box_version = "1.0"
+    # config.vm.box = "arm64v8/ubuntu:20.04"
+    config.vm.hostname = "controlplane1"
+    config.vm.network "private_network", ip: "192.168.56.11"
+    config.vm.provider "parallels" do |vb|
+      vb.name = "controlplane1"
+      vb.cpus = 2
+      vb.memory = 4096
+    end
+  end
+  config.vm.define "node1" do |config|
+    config.vm.box = "ilker/ubuntu2004"
+    config.vm.box_version = "1.0"
+    # config.vm.box = "arm64v8/ubuntu:20.04"
+    config.vm.provider "parallels" do |vb|
+      vb.name = "node1"
+      vb.cpus = 2
+      vb.memory = 2048
+    end
+    config.vm.hostname = "node1"
+    config.vm.network "private_network", ip: "192.168.56.21"
+  end
+  config.vm.define "node2" do |config|
+    config.vm.box = "ilker/ubuntu2004"
+    config.vm.box_version = "1.0"
+    # config.vm.box = "arm64v8/ubuntu:20.04"
+    config.vm.provider "parallels" do |vb|
+      vb.name = "node2"
+      vb.cpus = 2
+      vb.memory = 2048
+    end
+    config.vm.hostname = "node2"
+    config.vm.network "private_network", ip: "192.168.56.22"
+  end
+  config.vm.define "node3" do |config|
+    config.vm.box = "ilker/ubuntu2004"
+    config.vm.box_version = "1.0"
+    # config.vm.box = "arm64v8/ubuntu:20.04"
+    config.vm.provider "parallels" do |vb|
+      vb.name = "node3"
+      vb.cpus = 2
+      vb.memory = 2048
+    end
+    config.vm.hostname = "node3"
+    config.vm.network "private_network", ip: "192.168.56.23"
+  end
 
-  ## Hostmanager plugin
+  # Hostmanager plugin
   config.hostmanager.enabled = true
   config.hostmanager.manage_guest = true
-  # config.hostmanager.include_offline = true
-  config.hostmanager.host_file_path = "/etc/hosts"
 
-  config.vm.define "controlplane1" do |config0|
-    config0.vm.box = "mpasternak/focal64-arm"
-    config0.vm.hostname = "controlplane1"
-    config0.vm.network "private_network", ip: "192.168.56.11"
-    config0.vm.provider "parallels" do |prl|
-      prl.name = "controlplane1"
-      prl.cpus = 2
-      prl.memory = 4096
-      prl.customize ["set", :id, "--device-add", "net", "--type", "host-only"]
-    end
-    # Enable SSH Password Authentication
-    config0.vm.provision "shell", inline: <<-SHELL
-      sed -i 's/ChallengeResponseAuthentication no/ChallengeResponseAuthentication yes/g' /etc/ssh/sshd_config
-      systemctl restart ssh
-      systemctl start systemd-timesyncd
-      timedatectl set-timezone UTC
-    SHELL
-  end
-
-  config.vm.define "node1" do |config1|
-    config1.vm.box = "mpasternak/focal64-arm"
-    config1.vm.hostname = "node1"
-    config1.vm.network "private_network", ip: "192.168.56.21"
-    config1.vm.provider "parallels" do |prl|
-      prl.name = "node1"
-      prl.cpus = 2
-      prl.memory = 2048
-      # prl.customize ["set", :id, "--device-del", "net0"]
-      prl.customize ["set", :id, "--device-add", "net", "--type", "host-only"]
-    end
-    # Enable SSH Password Authentication
-    config1.vm.provision "shell", inline: <<-SHELL
-      sed -i 's/ChallengeResponseAuthentication no/ChallengeResponseAuthentication yes/g' /etc/ssh/sshd_config
-      systemctl restart ssh
-      systemctl start systemd-timesyncd
-      timedatectl set-timezone UTC
-    SHELL
-  end 
-
-  config.vm.define "node2" do |config2|
-    config2.vm.box = "mpasternak/focal64-arm"
-    config2.vm.hostname = "node2"
-    config2.vm.network "private_network", ip: "192.168.56.22"
-    config2.vm.provider "parallels" do |prl|
-      prl.name = "node2"
-      prl.cpus = 2
-      prl.memory = 2048
-      # prl.customize ["set", :id, "--device-del", "net0"]
-      prl.customize ["set", :id, "--device-add", "net", "--type", "host-only"]
-    end
-    # Enable SSH Password Authentication
-    config2.vm.provision "shell", inline: <<-SHELL
-      sed -i 's/ChallengeResponseAuthentication no/ChallengeResponseAuthentication yes/g' /etc/ssh/sshd_config
-      systemctl restart ssh
-      systemctl start systemd-timesyncd
-      timedatectl set-timezone UTC
-    SHELL
-  end
-
-  config.vm.define "node3" do |config3|
-    config3.vm.box = "mpasternak/focal64-arm"
-    config3.vm.hostname = "node3"
-    config3.vm.network "private_network", ip: "192.168.56.23"
-    config3.vm.provider "parallels" do |prl|
-      prl.name = "node3"
-      prl.cpus = 2
-      prl.memory = 2048
-      # prl.customize ["set", :id, "--device-del", "net0"]
-      prl.customize ["set", :id, "--device-add", "net", "--type", "host-only"]
-    end
-    # Enable SSH Password Authentication
-    config3.vm.provision "shell", inline: <<-SHELL
-      sed -i 's/ChallengeResponseAuthentication no/ChallengeResponseAuthentication yes/g' /etc/ssh/sshd_config
-      systemctl restart ssh
-      systemctl start systemd-timesyncd
-      timedatectl set-timezone UTC
-    SHELL
-  end
+  # Enable SSH Password Authentication
+  config.vm.provision "shell", inline: <<-SHELL
+    sed -i 's/ChallengeResponseAuthentication no/ChallengeResponseAuthentication yes/g' /etc/ssh/sshd_config
+    # sed -i 's/archive.ubuntu.com/ftp.daum.net/g' /etc/apt/sources.list
+    # sed -i 's/security.ubuntu.com/ftp.daum.net/g' /etc/apt/sources.list
+    systemctl restart ssh
+    systemctl start systemd-timesyncd
+    timedatectl set-timezone UTC
+  SHELL
 end
+
