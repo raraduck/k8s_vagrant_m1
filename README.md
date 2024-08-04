@@ -32,7 +32,7 @@ https://github.com/kubernetes-sigs/kubespray
 ### 1.깃 저장소 복사
 ```
 $ sudo apt update
-$ sudo apt install git python3 python3-pip
+$ sudo apt-get install git python3 python3-pip git
 $ git clone --single-branch --branch=release-2.22 https://github.com/kubernetes-sigs/kubespray.git
 ```
 
