@@ -57,6 +57,8 @@ Vagrant.configure("2") do |config|
 
   # Enable SSH Password Authentication
   config.vm.provision "shell", inline: <<-SHELL
+    swapoff -a
+    sed -i '/swap/s/^/#/' /etc/fstab
     sed -i 's/ChallengeResponseAuthentication no/ChallengeResponseAuthentication yes/g' /etc/ssh/sshd_config
     # sed -i 's/archive.ubuntu.com/ftp.daum.net/g' /etc/apt/sources.list
     # sed -i 's/security.ubuntu.com/ftp.daum.net/g' /etc/apt/sources.list

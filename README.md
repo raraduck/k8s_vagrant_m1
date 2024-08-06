@@ -39,6 +39,7 @@ $ git clone --single-branch --branch=release-2.22 https://github.com/kubernetes-
 ### 2.의존성 패키지 설치
 ```
 $ cd kubespray
+$ python3 -m pip install --upgrade pip
 $ pip3 install -r requirements.txt
 ```
 ### 3.인벤토리 파일 준비
@@ -56,7 +57,7 @@ $ ssh-copy-id vagrant@node3
 ## 참고 : 각 시스템에 사용자 준비 필요
 - sudo 명령어 사용이 가능하도록 설정
 ```
-sudo cat /etc/sudoers.d/vagrant
+sudo vim /etc/sudoers.d/vagrant
 vagrant ALL=(ALL) NOPASSWD:ALL
 ```
 ### 5.설정편집
@@ -129,4 +130,34 @@ root@controlplane1:~# kubectl completion bash > /etc/bash_completion.d/kubectl
 syntax on
 autocmd FileType yaml setlocal ts=2 sts=2 sw=2 et ai
 autocmd FileType python setlocal ts=4 sts=4 sw=4 expandtab autoindent
+```
+
+### 5. install docker for docker login (pull limit issue)
+```
+sudo mkdir -p /etc/apt/keyrings
+
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+
+sudo apt-get update
+sudo apt-get install docker-ce docker-ce-cli containerd.io
+```
+
+### 6. Install NFS server and client
+```
+sudo apt install -y nfs-kernel-server
+sudo mkdir /srv/nfs-volume
+echo "/srv/nfs-volume *(rw,sync,no_subtree_check,no_root_squash)" | sudo tee /etc/exports
+sudo exportfs -arv:wq
+```
+(optional) 방화벽 열기 (2049 포트)
+```
+sudo iptables -A INPUT -p tcp --dport 2049 -j ACCEPT
+sudo iptables -A INPUT -p udp --dport 2049 -j ACCEPT
+```
+클라이언트측
+```
+sudo apt install -y nfs-common
 ```
