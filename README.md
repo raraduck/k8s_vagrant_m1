@@ -162,3 +162,14 @@ sudo iptables -A INPUT -p udp --dport 2049 -j ACCEPT
 sudo apt install -y nfs-common
 showmount -e [nfs server ip address]
 ```
+
+### 7. Dockerfile build and push 
+```
+docker buildx build --platform linux/amd64,linux/arm64 -t dwnusa/myapp:v0.5-multiarch --push .
+```
+```
+(optional: single architecture build) docker build -t dwnusa/myapp-v0.5:multiarch .
+```
+docker login
+docker push dwnusa/myapp:v0.5-multiarch
+```
