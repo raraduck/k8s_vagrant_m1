@@ -150,7 +150,7 @@ sudo apt-get install docker-ce docker-ce-cli containerd.io
 sudo apt install -y nfs-kernel-server
 sudo mkdir /srv/nfs-volume
 echo "/srv/nfs-volume *(rw,sync,no_subtree_check,no_root_squash)" | sudo tee /etc/exports
-sudo exportfs -arv:wq
+sudo exportfs -arv
 ```
 (optional) 방화벽 열기 (2049 포트)
 ```
@@ -160,4 +160,5 @@ sudo iptables -A INPUT -p udp --dport 2049 -j ACCEPT
 클라이언트측
 ```
 sudo apt install -y nfs-common
+showmount -e [nfs server ip address]
 ```
