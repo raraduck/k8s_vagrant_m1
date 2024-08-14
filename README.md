@@ -3,6 +3,17 @@
 vagrant up controlplane1 && vagrant up node1 && vagrant up node2 && vagrant up node3
 ```
 
+## (CentOS7) mirror ISSUE (2024.08.14)
+```
+sudo sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo
+sudo sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo
+sudo sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo
+```
+필요시)
+```
+sudo yum install python3-libselinux
+```
+
 ## 기본 환경 구성 ( Virtualbox + Vagrant )
 1. virtualbox.org 공식 홈페이지에서 다운로드
 2. vagrantup.com 공식 홈페이지에서 다운로드
