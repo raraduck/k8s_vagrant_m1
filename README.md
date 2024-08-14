@@ -178,7 +178,6 @@ showmount -e [nfs server ip address]
 ```
 docker buildx build --platform linux/amd64,linux/arm64 -t dwnusa/myapp:v0.5-multiarch --push .
 ```
-```
 (optional: single architecture build) docker build -t dwnusa/myapp-v0.5:multiarch .
 ```
 docker login
