@@ -192,3 +192,7 @@ docker buildx build --platform linux/amd64,linux/arm64 -t dwnusa/myapp:v0.5-mult
 docker login
 docker push dwnusa/myapp:v0.5-multiarch
 ```
+
+### 8. kubeflow
+참고링크) https://kmaster.tistory.com/156
+특히 NodePort로 설정하는 부분 edit 명령 참고하기
