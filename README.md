@@ -40,6 +40,17 @@ https://github.com/kubernetes-sigs/kubespray
 
 
 ## kubespray 설치
+### 0. python version change
+```
+$ sudo apt update
+$ sudo apt install software-properties-common
+$ sudo add-apt-repository ppa:deadsnakes/ppa
+$ sudo apt update
+$ sudo apt install python3.7
+$ sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.7 1
+$ sudo update-alternatives --config python3
+$ virtualenv --python=/usr/bin/python3.7 venv
+```
 ### 1.깃 저장소 복사
 ```
 $ sudo apt update
