@@ -65,6 +65,13 @@ $ ssh-copy-id vagrant@node1
 $ ssh-copy-id vagrant@node2
 $ ssh-copy-id vagrant@node3
 ```
+#### (nameserver 추가, 모든 node에 적용)
+```
+node1$ sudo vim /etc/resolv.conf
+...
+nameserver 8.8.8.8
+...
+```
 ## 참고 : 각 시스템에 사용자 준비 필요
 - sudo 명령어 사용이 가능하도록 설정
 ```
