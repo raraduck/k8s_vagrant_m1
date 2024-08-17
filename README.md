@@ -141,6 +141,8 @@ root@controlplane1:~# chown -R vagrant. ~vagrant/.kube/
 ### 3.명령어 자동완성 (kubespray 는 기본 설정)
 ```
 root@controlplane1:~# kubectl completion bash > /etc/bash_completion.d/kubectl
+or
+# kubectl completion bash | sudo tee /etc/bash_completion.d/kubectl > /dev/null
 ```
 ### 4.yaml and python 들여쓰기 설정 (vimrc)
 > ~/.vimrc
