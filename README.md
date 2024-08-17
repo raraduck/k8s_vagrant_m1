@@ -72,6 +72,14 @@ node1$ sudo vim /etc/resolv.conf
 nameserver 8.8.8.8
 ...
 ```
+#### swap off (모든 node에서 swap off)
+```
+$ sudo swapoff -a
+$ sudo vim /etc/fstab
+(swapfile 단어 부분 주석처리)
+$ swapon --show
+(No message should up)
+```
 ## 참고 : 각 시스템에 사용자 준비 필요
 - sudo 명령어 사용이 가능하도록 설정
 ```
