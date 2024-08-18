@@ -189,6 +189,8 @@ sudo apt-get install docker-ce docker-ce-cli containerd.io
 sudo apt install -y nfs-kernel-server
 sudo mkdir /srv/nfs-volume
 echo "/srv/nfs-volume *(rw,sync,no_subtree_check,no_root_squash)" | sudo tee /etc/exports
+필요시)
+echo "/srv/nfs-volume *(rw,sync,no_subtree_check,no_root_squash,fsid=1)" | sudo tee /etc/exports
 sudo exportfs -arv
 ```
 (optional) 방화벽 열기 (2049 포트)
