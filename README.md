@@ -217,3 +217,25 @@ docker push dwnusa/myapp:v0.5-multiarch
 ### 8. kubeflow
 참고링크) https://kmaster.tistory.com/156
 특히 NodePort로 설정하는 부분 edit 명령 참고하기
+
+### 9. nfs-subdir-external-provisioner 설치 후 default 설정
+```
+git clone https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner.git
+cd nfs-subdir-external-provisioner/deploy
+kubectl create -f rbac.yaml
+vim deployment.yaml
+```
+```
+env:
+  - name: PROVISIONER_NAME
+    value: k8s-sigs.io/nfs-subdir-external-provisioner
+  - name: NFS_SERVER
+    value: NFS SERVER IP
+  - name: NFS_PATH
+    value: NFS 데이터 폴더 경로
+```
+```
+kubectl apply -f deployment.yaml
+kubectl apply -f class.yaml
+kubectl patch storageclass nfs-client -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+```
