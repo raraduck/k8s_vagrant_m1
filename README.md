@@ -216,8 +216,11 @@ docker push dwnusa/myapp:v0.5-multiarch
 
 ### 8. kubeflow
 참고링크) https://kmaster.tistory.com/156
+
 특히 NodePort로 설정하는 부분 edit 명령 참고하기
+
 참고링크) https://velog.io/@seokbin/Kubeflow-V1.4-%EC%84%A4%EC%B9%98-%EB%B0%8F-%EC%B4%88%EA%B8%B0-%EC%84%A4%EC%A0%95User-%EC%B6%94%EA%B0%80-CORS
+
 CSRF 설정 (HTTPS 권한)
 
 ### 9. nfs-subdir-external-provisioner 설치 후 default 설정
