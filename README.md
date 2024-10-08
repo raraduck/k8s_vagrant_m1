@@ -184,6 +184,8 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.
 
 sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io
+
+sudo usermod -aG docker <username>
 ```
 
 ### 6. Install NFS server and client
