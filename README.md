@@ -211,6 +211,7 @@ sudo iptables -A INPUT -p udp --dport 2049 -j ACCEPT
 ```
 sudo apt install -y nfs-common
 showmount -e [nfs server ip address]
+sudo mount -t nfs [ip address]:/<src_folder> /<trg_folder>
 ```
 
 ### 7. Dockerfile build and push 
