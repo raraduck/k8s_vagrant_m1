@@ -159,6 +159,11 @@ root@controlplane1:~# mkdir ~vagrant/.kube
 root@controlplane1:~# cp /etc/kubernetes/admin.conf ~vagrant/.kube/config 
 root@controlplane1:~# chown -R vagrant. ~vagrant/.kube/    
 ```
+```
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+```
 ### 3.명령어 자동완성 (kubespray 는 기본 설정)
 ```
 root@controlplane1:~# kubectl completion bash > /etc/bash_completion.d/kubectl
