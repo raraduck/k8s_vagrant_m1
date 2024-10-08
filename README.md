@@ -63,6 +63,8 @@ $ git clone --single-branch --branch=release-2.22 https://github.com/kubernetes-
 $ cd kubespray
 $ python3 -m pip install --upgrade pip
 $ pip3 install -r requirements.txt
+$ pip3 install -r requirements-2.11.txt (if python version 2.7, 3.5-3.9)
+$ pip3 install -r requirements-2.12.txt (if python version 3.8-3.10)
 ```
 ### 3.인벤토리 파일 준비
 ```
