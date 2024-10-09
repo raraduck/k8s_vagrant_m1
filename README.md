@@ -214,6 +214,59 @@ showmount -e [nfs server ip address]
 sudo mount -t nfs [ip address]:/<src_folder> /<trg_folder>
 ```
 
+### 6.1. Install Nvidia Docker2 (all clients)
+```
+curl -sL https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
+curl -sL https://nvidia.github.io/nvidia-docker/ubuntu20.04/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+sudo apt update
+sudo apt install -y nvidia-docker2
+
+sudo vim /etc/containerd/config.toml
+
+version = 2
+root = "/var/lib/containerd"
+state = "/run/containerd"
+oom_score = 0
+
+[grpc]
+  max_recv_message_size = 16777216
+  max_send_message_size = 16777216
+[debug]
+  level = "info"
+[metrics]
+  address = ""
+  grpc_histogram = false
+[plugins]
+  [plugins."io.containerd.grpc.v1.cri"]
+    sandbox_image = "registry.k8s.io/pause:3.8"
+    max_container_log_line_size = -1
+    enable_unprivileged_ports = false
+    enable_unprivileged_icmp = false
+    [plugins."io.containerd.grpc.v1.cri".containerd]
+      default_runtime_name = "nvidia"
+      snapshotter = "overlayfs"
+      [plugins."io.containerd.grpc.v1.cri".containerd.runtimes]
+        [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
+          runtime_type = "io.containerd.runc.v2"
+          runtime_engine = ""
+          runtime_root = ""
+          base_runtime_spec = "/etc/containerd/cri-base.json"
+          [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
+            systemdCgroup = true
+        [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia]
+          privileged_without_host_devices = false
+          runtime_type = "io.containerd.runc.v2"
+          runtime_engine = ""
+          runtime_root = ""
+          [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia.options]
+            BinaryName = "/usr/bin/nvidia-container-runtime"
+    [plugins."io.containerd.grpc.v1.cri".registry]
+      [plugins."io.containerd.grpc.v1.cri".registry.mirrors]
+        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.io"]
+          endpoint = ["<https://registry-1.docker.io>"]
+```
+> 재시작
+
 ### 7. Dockerfile build and push 
 ```
 docker buildx build --platform linux/amd64,linux/arm64 -t dwnusa/myapp:v0.5-multiarch --push .
