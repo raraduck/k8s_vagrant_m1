@@ -214,7 +214,7 @@ showmount -e [nfs server ip address]
 sudo mount -t nfs [ip address]:/<src_folder> /<trg_folder>
 ```
 
-### 6.1. Install Nvidia Docker2 (all clients)
+### 6.1. Install Nvidia Docker2 (all clients) (ref: https://github.com/NVIDIA/k8s-device-plugin?tab=readme-ov-file)
 ```
 curl -sL https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
 curl -sL https://nvidia.github.io/nvidia-docker/ubuntu20.04/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
