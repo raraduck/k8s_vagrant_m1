@@ -265,8 +265,9 @@ oom_score = 0
         [plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.io"]
           endpoint = ["<https://registry-1.docker.io>"]
 ```
-> 재시작
-
+```
+$ sudo systemctl restart containerd
+```
 ### 7. Dockerfile build and push 
 ```
 docker buildx build --platform linux/amd64,linux/arm64 -t dwnusa/myapp:v0.5-multiarch --push .
