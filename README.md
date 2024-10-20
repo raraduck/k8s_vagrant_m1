@@ -308,3 +308,63 @@ kubectl apply -f deployment.yaml
 kubectl apply -f class.yaml
 kubectl patch storageclass nfs-client -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 ```
+
+### 9. Argo workflow
+```
+ARGO_WORKFLOWS_VERSION="v3.5.8"
+kubectl create namespace argo
+kubectl apply -n argo -f "https://github.com/argoproj/argo-workflows/releases/download/${ARGO_WORKFLOWS_VERSION}/quick-start-minimal.yaml"
+kubectl -n argo port-forward svc/argo-server 2746:2746
+```
+> rbac.yaml
+```
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: argo-workflow-sa
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: executor
+rules:
+  - apiGroups:
+      - argoproj.io
+    resources:
+      - workflowtaskresults
+    verbs:
+      - create
+      - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: executor-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: executor
+subjects:
+  - kind: ServiceAccount
+    name: argo-workflow-sa
+```
+> hello-world-workflow.yaml
+```
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow                  
+metadata:
+  generateName: hello-world-   
+spec:
+  entrypoint: whalesay          
+  serviceAccountName: argo-workflow-sa      # 이 줄을 추가해 주세요!
+  templates:
+    - name: whalesay              
+      container:
+        image: docker/whalesay
+        command: [ cowsay ]
+        args: [ "hello world" ]
+        resources: 
+          limits:
+            memory: 32Mi
+            cpu: 100m
+```
