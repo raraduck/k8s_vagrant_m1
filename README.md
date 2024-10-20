@@ -368,3 +368,4 @@ spec:
             memory: 32Mi
             cpu: 100m
 ```
+> https://gonigoni.kr/posts/argo-workflows/
