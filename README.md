@@ -374,16 +374,16 @@ spec:
 ### 10. Argo 실행파일
 ```
 # Download the binary
-curl -sLO https://github.com/argoproj/argo-workflows/releases/download/v3.4.8/argo-darwin-amd64.gz
+curl -sLO https://github.com/argoproj/argo-workflows/releases/download/v3.4.8/argo-linux-amd64.gz
 
 # Unzip
-gunzip argo-darwin-amd64.gz
+gunzip argo-linux-amd64.gz
 
 # Make binary executable
-chmod +x argo-darwin-amd64
+chmod +x argo-linux-amd64
 
 # Move binary to path
-mv ./argo-darwin-amd64 /usr/local/bin/argo
+mv ./argo-linux-amd64 /usr/local/bin/argo
 
 # Test installation
 argo version
