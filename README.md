@@ -328,6 +328,7 @@ kubectl create namespace argo
 kubectl apply -n argo -f "https://github.com/argoproj/argo-workflows/releases/download/${ARGO_WORKFLOWS_VERSION}/quick-start-minimal.yaml"
 kubectl -n argo port-forward svc/argo-server 2746:2746
 ```
+> 아래 rbac 또는 cluster rbac 적용 (cluster rbac 적용함)
 > rbac.yaml
 ```
 apiVersion: v1
@@ -359,6 +360,33 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: argo-workflow-sa
+```
+> argo-rbac.yaml
+```
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: argo-pod-patch-role
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+- apiGroups: [""]
+  resources: ["pods/log"]
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: argo-pod-patch-role-binding
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: argo
+roleRef:
+  kind: ClusterRole
+  name: argo-pod-patch-role
+  apiGroup: rbac.authorization.k8s.io
 ```
 > hello-world-workflow.yaml
 ```
