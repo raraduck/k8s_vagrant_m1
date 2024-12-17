@@ -105,7 +105,7 @@ vim inventory/mycluster/group_vars/k8s_cluster/addons.yml
 helm_enabled: true
 metrics_server_enabled: true   
 ingress_nginx_enabled: true
-metallb_enabled: true
+metallb_enabled: true (필요없으면 false 유지)
 metallb_protocol: "layer2" (주석해제)
 metallb_config:
   address_pools:
