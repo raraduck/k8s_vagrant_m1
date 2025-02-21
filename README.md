@@ -71,7 +71,7 @@ $ pip3 install -r requirements-2.12.txt (if python version 3.8-3.10)
 $ cp -rfp inventory/sample inventory/mycluster  
 $ vim inventory/mycluster/inventory.ini
 ```
-### 4.ssh key 설정
+### 4.ssh key 설정 (클라우드에서는 meta-host 에서 작업해줘야함)
 ```
 $ ssh-keygen
 $ ssh-copy-id vagrant@node1
@@ -177,6 +177,27 @@ syntax on
 autocmd FileType yaml setlocal ts=2 sts=2 sw=2 et ai
 autocmd FileType python setlocal ts=4 sts=4 sw=4 expandtab autoindent
 ```
+
+### 4.1.bash history 용량 및 최적화 설정 (bashrc)
+> ~/.bashrc
+```
+# 1️⃣ 히스토리 크기 늘리기
+export HISTSIZE=100000       # 현재 세션에서 저장할 명령어 개수 (기본값 500~1000)
+export HISTFILESIZE=200000   # ~/.bash_history 파일에 저장할 명령어 개수
+
+# 2️⃣ 중복된 명령어 저장 방지
+export HISTCONTROL=ignoredups:erasedups  # 중복된 명령어 제거 (최근 것만 유지)
+
+# 3️⃣ 특정 명령어 저장하지 않기 (ls, cd, pwd 등)
+export HISTIGNORE="ls:cd:cd -:pwd:exit:clear"
+
+# 4️⃣ 실시간으로 히스토리 저장 (즉각 반영)
+export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
+
+# 5️⃣ 히스토리 파일 동기화 (여러 터미널 간 공유)
+shopt -s histappend
+```
+
 
 ### 5. install docker for docker login (pull limit issue)
 ```
@@ -361,7 +382,7 @@ subjects:
   - kind: ServiceAccount
     name: argo-workflow-sa
 ```
-> argo-rbac.yaml
+> argo-rbac.yaml (이것만 실행시켜도 됨)
 ```
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
