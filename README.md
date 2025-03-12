@@ -170,12 +170,13 @@ root@controlplane1:~# kubectl completion bash > /etc/bash_completion.d/kubectl
 or
 # kubectl completion bash | sudo tee /etc/bash_completion.d/kubectl > /dev/null
 ```
-### 4.yaml and python 들여쓰기 설정 (vimrc)
+### 4.yaml and python 들여쓰기와 colorcolumn 설정 (vimrc)
 > ~/.vimrc
 ```
 syntax on
 autocmd FileType yaml setlocal ts=2 sts=2 sw=2 et ai
 autocmd FileType python setlocal ts=4 sts=4 sw=4 expandtab autoindent
+autocmd CursorMoved,CursorMovedI * execute 'set colorcolumn=' . virtcol('.')
 ```
 
 ### 4.1.bash history 용량 및 최적화 설정 (bashrc)
