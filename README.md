@@ -3,6 +3,17 @@
 vagrant up controlplane1 && vagrant up node1 && vagrant up node2 && vagrant up node3
 ```
 
+## (CentOS7) mirror ISSUE (2024.08.14)
+```
+sudo sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo
+sudo sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo
+sudo sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo
+```
+필요시)
+```
+sudo yum install python3-libselinux
+```
+
 ## 기본 환경 구성 ( Virtualbox + Vagrant )
 1. virtualbox.org 공식 홈페이지에서 다운로드
 2. vagrantup.com 공식 홈페이지에서 다운로드
@@ -29,6 +40,17 @@ https://github.com/kubernetes-sigs/kubespray
 
 
 ## kubespray 설치
+### 0. python version change
+```
+$ sudo apt update
+$ sudo apt install software-properties-common
+$ sudo add-apt-repository ppa:deadsnakes/ppa
+$ sudo apt update
+$ sudo apt install python3.7
+$ sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.7 1
+$ sudo update-alternatives --config python3
+$ virtualenv --python=/usr/bin/python3.7 venv
+```
 ### 1.깃 저장소 복사
 ```
 $ sudo apt update
@@ -41,18 +63,35 @@ $ git clone --single-branch --branch=release-2.22 https://github.com/kubernetes-
 $ cd kubespray
 $ python3 -m pip install --upgrade pip
 $ pip3 install -r requirements.txt
+$ pip3 install -r requirements-2.11.txt (if python version 2.7, 3.5-3.9)
+$ pip3 install -r requirements-2.12.txt (if python version 3.8-3.10)
 ```
 ### 3.인벤토리 파일 준비
 ```
 $ cp -rfp inventory/sample inventory/mycluster  
 $ vim inventory/mycluster/inventory.ini
 ```
-### 4.ssh key 설정
+### 4.ssh key 설정 (클라우드에서는 meta-host 에서 작업해줘야함)
 ```
 $ ssh-keygen
 $ ssh-copy-id vagrant@node1
 $ ssh-copy-id vagrant@node2
 $ ssh-copy-id vagrant@node3
+```
+#### (nameserver 추가, 모든 node에 적용)
+```
+node1$ sudo vim /etc/resolv.conf
+...
+nameserver 8.8.8.8
+...
+```
+#### swap off (모든 node에서 swap off)
+```
+$ sudo swapoff -a
+$ sudo vim /etc/fstab
+(swapfile 단어 부분 주석처리)
+$ swapon --show
+(No message should up)
 ```
 ## 참고 : 각 시스템에 사용자 준비 필요
 - sudo 명령어 사용이 가능하도록 설정
@@ -66,7 +105,7 @@ vim inventory/mycluster/group_vars/k8s_cluster/addons.yml
 helm_enabled: true
 metrics_server_enabled: true   
 ingress_nginx_enabled: true
-metallb_enabled: true
+metallb_enabled: true (필요없으면 false 유지)
 metallb_protocol: "layer2" (주석해제)
 metallb_config:
   address_pools:
@@ -120,17 +159,46 @@ root@controlplane1:~# mkdir ~vagrant/.kube
 root@controlplane1:~# cp /etc/kubernetes/admin.conf ~vagrant/.kube/config 
 root@controlplane1:~# chown -R vagrant. ~vagrant/.kube/    
 ```
+```
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+```
 ### 3.명령어 자동완성 (kubespray 는 기본 설정)
 ```
 root@controlplane1:~# kubectl completion bash > /etc/bash_completion.d/kubectl
+or
+# kubectl completion bash | sudo tee /etc/bash_completion.d/kubectl > /dev/null
 ```
-### 4.yaml and python 들여쓰기 설정 (vimrc)
+### 4.yaml and python 들여쓰기와 colorcolumn 설정 (vimrc)
 > ~/.vimrc
 ```
 syntax on
 autocmd FileType yaml setlocal ts=2 sts=2 sw=2 et ai
 autocmd FileType python setlocal ts=4 sts=4 sw=4 expandtab autoindent
+autocmd CursorMoved,CursorMovedI * execute 'set colorcolumn=' . virtcol('.')
 ```
+
+### 4.1.bash history 용량 및 최적화 설정 (bashrc)
+> ~/.bashrc
+```
+# 1️⃣ 히스토리 크기 늘리기
+export HISTSIZE=100000       # 현재 세션에서 저장할 명령어 개수 (기본값 500~1000)
+export HISTFILESIZE=200000   # ~/.bash_history 파일에 저장할 명령어 개수
+
+# 2️⃣ 중복된 명령어 저장 방지
+export HISTCONTROL=ignoredups:erasedups  # 중복된 명령어 제거 (최근 것만 유지)
+
+# 3️⃣ 특정 명령어 저장하지 않기 (ls, cd, pwd 등)
+export HISTIGNORE="ls:cd:cd -:pwd:exit:clear"
+
+# 4️⃣ 실시간으로 히스토리 저장 (즉각 반영)
+export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
+
+# 5️⃣ 히스토리 파일 동기화 (여러 터미널 간 공유)
+shopt -s histappend
+```
+
 
 ### 5. install docker for docker login (pull limit issue)
 ```
@@ -143,6 +211,20 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.
 
 sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io
+
+sudo usermod -aG docker <username>
+
+distribution=$(. /etc/os-release;echo $ID$VERSION_ID)  # Ubuntu 버전 확인
+curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
+curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+
+sudo apt-get update
+
+sudo apt-get install -y nvidia-container-toolkit
+sudo systemctl restart docker
+
+docker run --gpus all nvidia/cuda:11.0-base nvidia-smi
+
 ```
 
 ### 6. Install NFS server and client
@@ -150,6 +232,8 @@ sudo apt-get install docker-ce docker-ce-cli containerd.io
 sudo apt install -y nfs-kernel-server
 sudo mkdir /srv/nfs-volume
 echo "/srv/nfs-volume *(rw,sync,no_subtree_check,no_root_squash)" | sudo tee /etc/exports
+필요시)
+echo "/srv/nfs-volume *(rw,sync,no_subtree_check,no_root_squash,fsid=1)" | sudo tee /etc/exports
 sudo exportfs -arv
 ```
 (optional) 방화벽 열기 (2049 포트)
@@ -161,15 +245,208 @@ sudo iptables -A INPUT -p udp --dport 2049 -j ACCEPT
 ```
 sudo apt install -y nfs-common
 showmount -e [nfs server ip address]
+sudo mount -t nfs [ip address]:/<src_folder> /<trg_folder>
 ```
 
+### 6.1. Install Nvidia Docker2 (all clients) (ref: https://github.com/NVIDIA/k8s-device-plugin?tab=readme-ov-file)
+```
+curl -sL https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
+curl -sL https://nvidia.github.io/nvidia-docker/ubuntu20.04/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+sudo apt update
+sudo apt install -y nvidia-docker2
+
+sudo vim /etc/containerd/config.toml
+
+version = 2
+root = "/var/lib/containerd"
+state = "/run/containerd"
+oom_score = 0
+
+[grpc]
+  max_recv_message_size = 16777216
+  max_send_message_size = 16777216
+[debug]
+  level = "info"
+[metrics]
+  address = ""
+  grpc_histogram = false
+[plugins]
+  [plugins."io.containerd.grpc.v1.cri"]
+    sandbox_image = "registry.k8s.io/pause:3.8"
+    max_container_log_line_size = -1
+    enable_unprivileged_ports = false
+    enable_unprivileged_icmp = false
+    [plugins."io.containerd.grpc.v1.cri".containerd]
+      default_runtime_name = "nvidia"
+      snapshotter = "overlayfs"
+      [plugins."io.containerd.grpc.v1.cri".containerd.runtimes]
+        [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
+          runtime_type = "io.containerd.runc.v2"
+          runtime_engine = ""
+          runtime_root = ""
+          base_runtime_spec = "/etc/containerd/cri-base.json"
+          [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
+            systemdCgroup = true
+        [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia]
+          privileged_without_host_devices = false
+          runtime_type = "io.containerd.runc.v2"
+          runtime_engine = ""
+          runtime_root = ""
+          [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia.options]
+            BinaryName = "/usr/bin/nvidia-container-runtime"
+    [plugins."io.containerd.grpc.v1.cri".registry]
+      [plugins."io.containerd.grpc.v1.cri".registry.mirrors]
+        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.io"]
+          endpoint = ["<https://registry-1.docker.io>"]
+```
+```
+$ sudo systemctl restart containerd
+```
 ### 7. Dockerfile build and push 
 ```
 docker buildx build --platform linux/amd64,linux/arm64 -t dwnusa/myapp:v0.5-multiarch --push .
-```
 ```
 (optional: single architecture build) docker build -t dwnusa/myapp-v0.5:multiarch .
 ```
 docker login
 docker push dwnusa/myapp:v0.5-multiarch
+```
+
+### 8. kubeflow
+참고링크) https://kmaster.tistory.com/156
+
+특히 NodePort로 설정하는 부분 edit 명령 참고하기
+
+참고링크) https://velog.io/@seokbin/Kubeflow-V1.4-%EC%84%A4%EC%B9%98-%EB%B0%8F-%EC%B4%88%EA%B8%B0-%EC%84%A4%EC%A0%95User-%EC%B6%94%EA%B0%80-CORS
+
+CSRF 설정 (HTTPS 권한)
+
+### 9. nfs-subdir-external-provisioner 설치 후 default 설정
+```
+git clone https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner.git
+cd nfs-subdir-external-provisioner/deploy
+kubectl create -f rbac.yaml
+vim deployment.yaml
+```
+```
+env:
+  - name: PROVISIONER_NAME
+    value: k8s-sigs.io/nfs-subdir-external-provisioner
+  - name: NFS_SERVER
+    value: NFS SERVER IP
+  - name: NFS_PATH
+    value: NFS 데이터 폴더 경로
+```
+```
+kubectl apply -f deployment.yaml
+kubectl apply -f class.yaml
+kubectl patch storageclass nfs-client -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+```
+
+### 9. Argo workflow
+```
+ARGO_WORKFLOWS_VERSION="v3.5.8"
+kubectl create namespace argo
+kubectl apply -n argo -f "https://github.com/argoproj/argo-workflows/releases/download/${ARGO_WORKFLOWS_VERSION}/quick-start-minimal.yaml"
+kubectl -n argo port-forward svc/argo-server 2746:2746
+```
+> 아래 rbac 또는 cluster rbac 적용 (cluster rbac 적용함)
+> rbac.yaml
+```
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: argo-workflow-sa
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: executor
+rules:
+  - apiGroups:
+      - argoproj.io
+    resources:
+      - workflowtaskresults
+    verbs:
+      - create
+      - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: executor-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: executor
+subjects:
+  - kind: ServiceAccount
+    name: argo-workflow-sa
+```
+> argo-rbac.yaml (이것만 실행시켜도 됨)
+```
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: argo-pod-patch-role
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+- apiGroups: [""]
+  resources: ["pods/log"]
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: argo-pod-patch-role-binding
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: argo
+roleRef:
+  kind: ClusterRole
+  name: argo-pod-patch-role
+  apiGroup: rbac.authorization.k8s.io
+```
+> hello-world-workflow.yaml
+```
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow                  
+metadata:
+  generateName: hello-world-   
+spec:
+  entrypoint: whalesay          
+  serviceAccountName: argo-workflow-sa      # 이 줄을 추가해 주세요!
+  templates:
+    - name: whalesay              
+      container:
+        image: docker/whalesay
+        command: [ cowsay ]
+        args: [ "hello world" ]
+        resources: 
+          limits:
+            memory: 32Mi
+            cpu: 100m
+```
+> https://gonigoni.kr/posts/argo-workflows/
+
+
+### 10. Argo 실행파일
+```
+# Download the binary
+curl -sLO https://github.com/argoproj/argo-workflows/releases/download/v3.4.8/argo-linux-amd64.gz
+
+# Unzip
+gunzip argo-linux-amd64.gz
+
+# Make binary executable
+chmod +x argo-linux-amd64
+
+# Move binary to path
+mv ./argo-linux-amd64 /usr/local/bin/argo
+
+# Test installation
+argo version
 ```
