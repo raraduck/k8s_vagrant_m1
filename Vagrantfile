@@ -38,18 +38,18 @@ Vagrant.configure("2") do |config|
     config.vm.hostname = "node2"
     config.vm.network "private_network", ip: "192.168.56.22"
   end
-  config.vm.define "node3" do |config|
-    config.vm.box = "ilker/ubuntu2004"
-    config.vm.box_version = "1.0"
-    # config.vm.box = "arm64v8/ubuntu:20.04"
-    config.vm.provider "parallels" do |vb|
-      vb.name = "node3"
-      vb.cpus = 2
-      vb.memory = 2048
-    end
-    config.vm.hostname = "node3"
-    config.vm.network "private_network", ip: "192.168.56.23"
-  end
+#   config.vm.define "node3" do |config|
+#     config.vm.box = "ilker/ubuntu2004"
+#     config.vm.box_version = "1.0"
+#     # config.vm.box = "arm64v8/ubuntu:20.04"
+#     config.vm.provider "parallels" do |vb|
+#       vb.name = "node3"
+#       vb.cpus = 2
+#       vb.memory = 2048
+#     end
+#     config.vm.hostname = "node3"
+#     config.vm.network "private_network", ip: "192.168.56.23"
+#   end
 
   # Hostmanager plugin
   config.hostmanager.enabled = true
@@ -64,7 +64,7 @@ Vagrant.configure("2") do |config|
     # sed -i 's/security.ubuntu.com/ftp.daum.net/g' /etc/apt/sources.list
     systemctl restart ssh
     systemctl start systemd-timesyncd
-    timedatectl set-timezone UTC
+    timedatectl set-timezone Asia/Seoul
   SHELL
 end
 
