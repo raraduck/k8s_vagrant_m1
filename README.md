@@ -114,7 +114,7 @@ metallb_config:
         - 192.168.56.200-192.168.56.210 (이부분 수정 필요)
       auto_assign: true
   layer2:
-    - primary
+    - primary (반드시 필요)
 ```
 -> 주석 해제 및 주소 대역 수정
 ```
