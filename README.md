@@ -54,7 +54,7 @@ $ virtualenv --python=/usr/bin/python3.7 venv
 ### 1.깃 저장소 복사
 ```
 $ sudo apt update
-$ sudo apt-get install git python3 python3-pip git
+$ sudo apt-get install -y git python3 python3-pip python3-venv
 $ git clone --single-branch --branch=release-2.22 https://github.com/kubernetes-sigs/kubespray.git
 ```
 
