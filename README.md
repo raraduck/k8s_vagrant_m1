@@ -88,6 +88,8 @@ nameserver 8.8.8.8
 #### swap off (모든 node에서 swap off)
 ```
 $ sudo swapoff -a
+$ sudo sed -i '/ swap / s/^/#/' /etc/fstab
+# or 
 $ sudo vim /etc/fstab
 (swapfile 단어 부분 주석처리)
 $ swapon --show
