@@ -139,7 +139,8 @@ $ ansible-playbook -i inventory/mycluster/inventory.ini cluster.yml -b
 -> 실질적인 쿠버네티스 환경 배포 작업 시작
 
 # 서버를 추가할때는 이 명령으로...
-$ ansible-playbook -i inventory/mycluster/inventory.ini scale.yml -b 
+$ ansible-playbook -i inventory/mycluster/inventory.ini scale.yml -b \
+  --limit="kube_control_plane,node4,node5,node6,..."
 ```
 
 #### 설치 중 오류 발생 시 
