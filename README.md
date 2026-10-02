@@ -124,6 +124,13 @@ metallb_config:
 $ vim inventory/mycluster/group_vars/k8s_cluster/k8s-cluster.yml
 kube_proxy_strict_arp: true
 ```
+vim inventory/mycluster/group_vars/k8s_cluster/k8s-cluster.yml
+```
+kube_network_plugin: calico
+
+# Setting multi_networking to true will install Multus: https://github.com/k8snetworkplumbingwg/multus-cni
+kube_network_plugin_multus: true
+```
 ### 6.앤서블 명령어로 확인 및 설치
 ```
 $ ansible -m ping all -i inventory/mycluster/inventory.ini 
