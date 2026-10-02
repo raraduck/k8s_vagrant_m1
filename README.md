@@ -56,6 +56,7 @@ $ virtualenv --python=/usr/bin/python3.7 venv
 $ sudo apt update
 $ sudo apt-get install -y git python3 python3-pip python3-venv
 $ git clone --single-branch --branch=release-2.22 https://github.com/kubernetes-sigs/kubespray.git
+# Ubuntu 24.04 LTE 에서 기본 python 버전은 3.12 이상이므로, release-2.25 로 설치 해야함
 ```
 
 ### 2.의존성 패키지 설치
