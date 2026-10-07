@@ -135,6 +135,7 @@ vim inventory/mycluster/group_vars/k8s_cluster/k8s-net-calico.yml
 단, 이렇게 하려면 앞으로 추가할 노드까지 포함해서 모든 노드의 관리망 NIC 이름이 eno1이어야 합니다. 노드마다 NIC 이름이 다를 수 있는 환경이라면 기본값(can-reach)을 쓰는 쪽이 더 안전합니다.
 ```bash
 calico_ip_auto_method: "interface=eth0"
+# 또는 calico_ip_auto_method: "cidr=192.168.0.0/24"
 ```
 ### 6.앤서블 명령어로 확인 및 설치
 ```
