@@ -96,6 +96,13 @@ $ sudo vim /etc/fstab
 $ swapon --show
 (No message should up)
 ```
+#### 노드의 fs.inotify.max_user_instances 한도 높이기
+```
+for n in gn142 gn143 gn144 gn147 gn148 gn150 gn181 gn182 gn183 gn184; do
+  ssh neuroman@$n "echo 'fs.inotify.max_user_instances=1024
+fs.inotify.max_user_watches=1048576' | sudo tee /etc/sysctl.d/99-inotify.conf && sudo sysctl --system > /dev/null && sysctl fs.inotify.max_user_instances"
+done
+```
 ## 참고 : 각 시스템에 사용자 준비 필요
 - sudo 명령어 사용이 가능하도록 설정
 ```
